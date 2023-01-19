@@ -1,0 +1,25 @@
+service: apu
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+package:
+ patterns:
+   - '!LICENSE'
+   - '!README.md'
+   - '!requirements.txt'
+
+functions:
+  hello:
+    handler: src/handler.hello
