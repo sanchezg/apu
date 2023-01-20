@@ -20,6 +20,8 @@ This was developed using telegram webhooks (connected to an AWS lambda function)
 npm install -g serverless
 ```
 
+Copy `env.yml.dist` as `env.yml` and store there your personal keys.
+
 Deploy this project with:
 
 ```
