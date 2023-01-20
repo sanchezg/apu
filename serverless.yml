@@ -16,7 +16,7 @@ package:
    - '!requirements.txt'
 
 functions:
-  hello:
+  bot:
     handler: src/handler.apu_handler
     environment:
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
