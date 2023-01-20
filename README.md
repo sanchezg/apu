@@ -20,7 +20,18 @@ This was developed using telegram webhooks (connected to an AWS lambda function)
 npm install -g serverless
 ```
 
-Copy `env.yml.dist` as `env.yml` and store there your personal keys.
+Load following keys (your keys) into a `.env` file:
+
+```
+TELEGRAM_TOKEN=<>
+TELEGRAM_USER_ID=<>
+```
+
+Install dotenv with:
+
+```
+$ npm install dotenv --save
+```
 
 Deploy this project with:
 
