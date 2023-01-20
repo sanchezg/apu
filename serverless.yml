@@ -1,0 +1,23 @@
+service: apu
+
+frameworkVersion: '3'
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: dev
+
+package:
+ patterns:
+   - '!LICENSE'
+   - '!README.md'
+   - '!requirements.txt'
+
+functions:
+  bot:
+    handler: src/handler.apu_handler
+    environment:
+      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+      TELEGRAM_USER_ID: ${env:TELEGRAM_USER_ID}
