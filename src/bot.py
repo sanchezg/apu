@@ -38,7 +38,7 @@ class ApuBot:
             if str(from_user) != str(self._user_id):
                 print(f"User error: {from_user} and {self._user_id}")
                 raise ApuError(message="Sorry, I don't know you (ref: invalid-user).")
-        
+
         text: str = update.get("text", "")
         if not any(
             [
@@ -49,7 +49,8 @@ class ApuBot:
             raise ApuError(message="Sorry, I don't understand you (ref: invalid-command).")
 
     def parse_command(self, command_text: str):
-        return command_text[1:].split(maxsplit=1)
+        command_args = command_text[1:].split(maxsplit=1)
+        return command_args[0], command_args[1:]  # if no args, then split returns just the command
 
     def process_update(self, update_event: dict):
         """
