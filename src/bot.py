@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+import json
 import os
 import sys
 sys.path.insert(0, "src/vendor")
@@ -58,18 +59,68 @@ class ApuBot:
         Input data must follows Update object format: https://core.telegram.org/bots/api#update
         """
         self._update_event = update_event
-        if "message" not in update_event:  # TODO: move to a validation method into Update dataclass
+
+        if "message" in update_event:
+            self._process_message()
+        elif "callback_query" in update_event:
+            self._process_callback_query()
+        else:
+            # TODO: move to a validation method into Update dataclass
             raise ApuError(message="Sorry, I can't do nothing with that (ref: invalid-event).")
 
-        message = update_event["message"]
+    def _process_message(self):
+        message = self._update_event["message"]
         self.validate_message(message)
         self.command, self.command_args = self.parse_command(message["text"])
+        if self.command_args:
+            self.command_args = [x for x in self.command_args[0].split()]
+
+        self.date: datetime = datetime.fromtimestamp(message["date"], timezone.utc)
+        self.local_date: datetime = datetime.fromtimestamp(message["date"], timezone.utc).astimezone(tz=self.tz)
+        self.chat_id = message["chat"]["id"]
+
+    def _process_callback_query(self):
+        callback_query = self._update_event["callback_query"]
+        message = callback_query["message"]
         self.date: datetime = datetime.fromtimestamp(message["date"], timezone.utc)
         self.local_date: self.date.astimezone(self.tz)
         self.chat_id = message["chat"]["id"]
 
+        chosen_option: str = callback_query["data"]  # TODO
+        if chosen_option.startswith("categoria1"):
+            pass
+        elif chosen_option.startswith("categoria2"):
+            pass
+        elif chosen_option.startswith("destinatario"):
+            pass
+        elif chosen_option.startswith("cantidad"):
+            pass
+        elif chosen_option.startswith("moneda"):
+            pass
+        else:
+            pass
+
     def process_new(self):
-        pass
+        if not self.command_args:
+            print("## No arguments, sending inlineKeyboard to the user")
+            self.send_api_command(
+                "sendMessage",
+                text="Elegir categoria 1 del gasto",
+                chat_id=self.chat_id,
+                reply_markup=json.dumps(
+                    {
+                        "inline_keyboard": [
+                            [{"text": "Mano de obra", "callback_data": "mano_de_obra"}],
+                            [{"text": "Administracion", "callback_data": "administracion"}],
+                            [{"text": "Materiales", "callback_data": "materiales"}],
+                            [{"text": "Insumos", "callback_data": "insumos"}]
+                        ]
+                    }
+                )
+            )
+            return
+
+        return self.command_args
 
     def process_list(self):
         pass
@@ -83,7 +134,7 @@ class ApuBot:
     def send_api_command(self, command, **kwargs):
         url = f"{self._base_url}/{command}"
         response = requests.get(url, params=kwargs)
-        print(f"## Send message to user, response: {response}")
+        print(f"## Send message to user, response: {response} | {response.content}")
 
     def send_answer(self, message: str):
         self.send_api_command("sendMessage", text=message, chat_id=self.chat_id)
